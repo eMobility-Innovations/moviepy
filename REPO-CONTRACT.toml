@@ -1,0 +1,19 @@
+[repo]
+name = "moviepy"
+what_it_is = "A generic video editing library and stable compatibility overlay."
+what_it_does = "Composes video, audio and text into encoded media. The stable branch preserves upstream release history and carries reviewed compatibility fixes for current Pillow and FFmpeg bundles."
+owner = "patryk"
+status = "active"
+
+[rules]
+must = ["Multiline labels preserve all painted text and stroke with current Pillow (test_pillow13_compat.py).", "Current FFmpeg release banners, rotation metadata and VP9 alpha preserve their public behavior (test_ffmpeg9_compat.py).", "The verifier installs declared runtime and test dependencies through their normal resolver before running upstream tests."]
+
+[tests]
+command = "./verify.sh"
+suite = "tests/"
+covers = "Upstream video/audio transforms, composition, encoders, text rendering, current-Pillow multiline clipping and current-FFmpeg version/rotation/alpha compatibility."
+coverage_floor = 80
+parallel = 8
+
+[runner]
+toolchains = ["python@3.11"]

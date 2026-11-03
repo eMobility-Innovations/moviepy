@@ -145,7 +145,7 @@ class FFMPEG_VideoWriter:
             cmd.extend(["-threads", str(threads)])
 
         # Disable auto alt ref for transparent webm and set pix format yo yuva420p
-        if codec == "libvpx" and with_mask:
+        if codec in ("libvpx", "libvpx-vp9") and with_mask:
             cmd.extend(["-pix_fmt", "yuva420p"])
             cmd.extend(["-auto-alt-ref", "0"])
         elif (

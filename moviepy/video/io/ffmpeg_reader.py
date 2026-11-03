@@ -808,12 +808,12 @@ class FFmpegInfosParser:
         if field == "rotate":
             return (field, float(value))
 
-        elif field == "displaymatrix":
+        elif field in ("displaymatrix", "Display Matrix"):
             match = re.search(r"[-+]?\d+(\.\d+)?", value)
             if match:
                 # We must multiply by -1 because displaymatrix return info
                 # about how to rotate to show video, not about video rotation
-                return (field, float(match.group()) * -1)
+                return ("displaymatrix", float(match.group()) * -1)
 
         return (field, value)
 

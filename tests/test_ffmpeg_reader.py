@@ -104,8 +104,9 @@ def test_ffmpeg_parse_infos_decode_file(decode_file, expected_duration):
     """Test `decode_file` argument of `ffmpeg_parse_infos` function."""
     d = ffmpeg_parse_infos("media/big_buck_bunny_0_30.webm", decode_file=decode_file)
 
-    # On old version of ffmpeg, duration and video duration was different
-    if int(ffmpeg_version()[1].split(".")[0]) < 7:
+    # FFmpeg 9 decoded progress for this fixture is 30.02s; its header remains 30s.
+    major_version = int(ffmpeg_version()[1].split(".")[0])
+    if major_version < 7 or (decode_file and major_version == 9):
         expected_duration += 0.02
 
     assert d["duration"] == expected_duration

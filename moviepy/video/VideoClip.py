@@ -1907,17 +1907,30 @@ class TextClip(ImageClip):
         )
 
         # For height calculate manually as textbbox is not realiable
-        try:
-            # this disappeared in more recent versions of Pillow
-            line_height = draw._multiline_spacing(font_pil, spacing, stroke_width)
-            line_breaks = text.count("\n")
-            lines_height = line_breaks * line_height
-            paddings = real_font_size + stroke_width * 2
-            height = int(lines_height + paddings)
-        except AttributeError:
-            height = int(bottom - top)
+        line_height = self.__multiline_spacing(draw, font_pil, spacing, stroke_width)
+        line_breaks = text.count("\n")
+        lines_height = line_breaks * line_height
+        paddings = real_font_size + stroke_width * 2
+        height = int(lines_height + paddings)
 
         return (int(right - left), height)
+
+    def __multiline_spacing(
+        self,
+        draw: ImageDraw.ImageDraw,
+        font: Union[ImageFont.ImageFont, ImageFont.FreeTypeFont, ImageFont.TransposedFont],
+        spacing: float,
+        stroke_width: float,
+    ) -> float:
+        """Calculate multiline spacing using Pillow's public API.
+
+        Backported from upstream 97316f37; Union preserves stable Python 3.9 support.
+        """
+        return (
+            draw.textbbox((0, 0), "A", font, stroke_width=stroke_width)[3]
+            + stroke_width
+            + spacing
+        )
 
     def __find_optimum_font_size(
         self,

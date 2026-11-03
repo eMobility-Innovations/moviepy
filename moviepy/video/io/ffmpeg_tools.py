@@ -211,6 +211,14 @@ def ffmpeg_stabilize_video(
     subprocess_call(cmd, logger=logger)
 
 
+def _numeric_release_version(version):
+    """Accept release-tag prefixes used by current FFmpeg/FFplay bundles."""
+    match = re.match(r"^n?([0-9]+(?:\.[0-9]+)*)", version)
+    if match is None:
+        raise ValueError("Unsupported FFmpeg release version: %r" % version)
+    return match.group(1)
+
+
 def ffmpeg_version():
     """
     Retrieve the FFmpeg version.
@@ -248,7 +256,7 @@ def ffmpeg_version():
 
     # Extract the version number from the first line of output
     full_version = result.stdout.splitlines()[0].split()[2]
-    numeric_version = re.match(r"^[0-9.]+", full_version).group(0)
+    numeric_version = _numeric_release_version(full_version)
     return (full_version, numeric_version)
 
 
@@ -286,5 +294,5 @@ def ffplay_version():
     result = subprocess.run(cmd, capture_output=True, text=True, check=True)
     # Extract the version number from the first line of output
     full_version = result.stdout.splitlines()[0].split()[2]
-    numeric_version = re.match(r"^[0-9.]+", full_version).group(0)
+    numeric_version = _numeric_release_version(full_version)
     return (full_version, numeric_version)
