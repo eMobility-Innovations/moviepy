@@ -1,0 +1,27 @@
+[repo]
+name = "moviepy"
+what_it_is = "An upstream-compatible Python library for programmatic video and audio editing."
+what_it_does = "MoviePy reads, transforms, composites and encodes video and audio clips. This fork retains MoviePy 2.2.1 identity and upstream tests while backporting Pillow compatibility fixes."
+owner = "eMobility-Innovations"
+status = "active"
+
+[rules]
+must = [
+  "Clip start, end and duration transformations preserve timeline semantics (tests/test_Clip.py).",
+  "Bitmap clips preserve frame pixels and bitmap round trips (tests/test_BitmapClip.py).",
+  "FFmpeg readers preserve rotation and frame-seeking results (tests/test_ffmpeg_reader.py).",
+  "Text labels retain sizing and font validation behaviour (tests/test_TextClip.py).",
+]
+
+[tests]
+command = "./verify.sh"
+suite = "tests/"
+covers = "The complete upstream suite exercises clip timing/copy/subclips, bitmap pixels, audio/video composition, effects, text/subtitles, FFmpeg reading/writing/seeking and documentation examples. Existing skips/xfails are reported, never silently filtered. Gate execution is pending a cold shared-runner result; this declaration does not claim a passing suite."
+coverage_floor = 80
+# Upstream tests share output filenames and port 8000; parallel safety is unproven.
+# Explicit xdist -n 1 in verify.sh avoids claiming an unmeasured safe degree.
+parallel = 1
+
+[runner]
+toolchains = ["python@3.12"]
+py_packages = ["pytest-xdist"]

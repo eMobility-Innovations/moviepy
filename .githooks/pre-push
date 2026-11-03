@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Drain git ref input before the runner starts SSH children.
+cat >/dev/null
+cd "$(git rev-parse --show-toplevel)"
+# Static checks do not execute the upstream suite on the workstation.
+git diff --check
+bash -n ./verify.sh ./.githooks/pre-push
+if [[ "${CLAUDE_POLICY_RUN_FULL_SUITE:-0}" != 1 ]]; then
+  echo "Full suite deferred to merge validation."
+  exit 0
+fi
+command -v claude-gate-run >/dev/null || { echo "Shared runner command unavailable." >&2; exit 2; }
+# Refuse workstation fallback; preserve the runner's verdict unchanged.
+export CLAUDE_GATE_FORBID_LOCAL=1
+claude-gate-run --two-rail -- ./verify.sh </dev/null
